@@ -21,6 +21,7 @@
 namespace Phalcon\Mvc\Model;
 
 use Phalcon\Db;
+use Phalcon\Db\Reference;
 use Phalcon\Text;
 use Phalcon\Utils;
 use DirectoryIterator;
