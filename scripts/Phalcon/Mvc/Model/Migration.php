@@ -647,6 +647,20 @@ class Migration
 
                 foreach ($localFields as $fieldName => $localField) {
                     if (!isset($fields[$fieldName])) {
+                        /**
+                         * Check if there is currently any constraint for dropping column and drop them as well
+                         * @todo Change it in 4.0.0 to use proper parameter in describeReferences method
+                         */
+                        /** @var Reference[] $activeReferences */
+                        $activeReferences = array_filter(
+                            self::$_connection->describeReferences($tableName, $defaultSchema),
+                            function(Reference $reference) use ($fieldName) {
+                                return in_array($fieldName, $reference->getColumns());
+                            }
+                        );
+                        foreach($activeReferences as $activeReference) {
+                            self::$_connection->dropForeignKey($tableName, $defaultSchema, $activeReference->getName());
+                        }
                         self::$_connection->dropColumn($tableName, null, $fieldName);
                     }
                 }
